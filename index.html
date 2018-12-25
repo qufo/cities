@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>省市地街道社区多级联动</title>
+</head>
+<body>
+<div id="cities">
+    <select id="province" name="province" class="cities">
+        <option value="0">请选择省</option>
+    </select>
+    <select id="city" name="city">
+        <option value="0">请选择市</option>
+    </select>
+    <select id="area" name="area">
+        <option value="0">请选择区/县</option>
+    </select>
+    <select id="street" name="street">
+        <option value="0">请选择街道</option>
+    </select>
+    <select id="village" name="village">
+        <option value="0">请选择社区</option>
+    </select>
+</div>
+</body>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script>
+    $(function(){
+        var ServerURL = '/';
+        function InitProvince() {
+            $.getJSON(ServerURL+"1.json",function(result){
+                $('#province').empty();
+                $.each(result, function(i, item){
+                    $('#province').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+            InitSelector($('#city'));
+            InitSelector($('#area'));
+            InitSelector($('#street'));
+            InitSelector($('#village'));
+            $.getJSON(ServerURL+"11.json",function(result){
+                $.each(result, function(i, item){
+                    $('#city').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+        }
+
+        $('#province').change(function () {
+            InitSelector($('#city'));
+            InitSelector($('#area'));
+            InitSelector($('#street'));
+            InitSelector($('#village'));
+            province = $(this).children('option:selected').val();
+            $.getJSON(ServerURL+province+".json",function(result){
+                $.each(result, function(i, item){
+                    $('#city').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+        });
+        
+        $('#city').change(function () {
+            InitSelector($('#area'));
+            InitSelector($('#street'));
+            InitSelector($('#village'));
+            city = $(this).children('option:selected').val();
+            $.getJSON(ServerURL+city+".json",function(result){
+                $.each(result, function(i, item){
+                    $('#area').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+        });
+
+        $('#area').change(function () {
+            InitSelector($('#street'));
+            InitSelector($('#village'));
+            area = $(this).children('option:selected').val();
+            $.getJSON(ServerURL+area+".json",function(result){
+                $.each(result, function(i, item){
+                    $('#street').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+        });
+
+        $('#street').change(function () {
+            InitSelector($('#village'));
+            street = $(this).children('option:selected').val();
+            $.getJSON(ServerURL+street+".json",function(result){
+                $.each(result, function(i, item){
+                    $('#village').append('<option value="'+item.code+'">'+item.name+'</option>');
+                });
+            });
+        });
+
+        function InitSelector(obj) {
+            obj.empty();
+            obj.append('<option value="0">请选择</option>');
+        }
+
+        InitProvince();
+    });
+</script>
+</html>
